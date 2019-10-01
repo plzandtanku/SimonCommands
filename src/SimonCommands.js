@@ -12,23 +12,33 @@ class SimonCommands extends React.Component {
     selected: "",
     valid: true,
     green: "green",
-    coral: "coral",
+    red: "red",
     yellow: "yellow",
     blue: "blue",
-    count: 0,
+    count: 3,
+    path: [],
   }
-  colors = ["green", "coral", "yellow", "blue"];
+  colors = ["green", "red", "yellow", "blue"];
   startGame() {
+    this.newRound(0, []);
+  }
+  newRound(i, path) {
     const index = Math.floor(Math.random() * this.colors.length);
-    console.log(index);
     const tile = this.colors[index];
+    path.push(tile);
     this.setState({[tile]:"white"}, () => {
       let that = this;
       setTimeout(function(){
-        that.setState({[tile]:tile});
+        that.setState({[tile]:tile}, () => {
+          if (i < that.state.count) {
+            setTimeout(function(){
+              that.newRound(i+1, path);
+            }, 250);
+          }
+        });
       }, 250);
     });
-
+    console.log(path);
   }
 
   lightUp(e, color) {
@@ -42,7 +52,7 @@ class SimonCommands extends React.Component {
   render() {
     let divs = [];
     this.colors.forEach(color => {
-      divs.push(<div key={color} style={{backgroundColor: this.state[color]}} id={color} onClick={(e) => this.lightUp(e,color)} className={`tile top ${color}`}></div>)
+      divs.push(<div key={color} style={{backgroundColor: this.state[color]}} id={color} onClick={(e) => this.lightUp(e,color)} className={`tile top`}></div>)
     })
     return (
       <div>
