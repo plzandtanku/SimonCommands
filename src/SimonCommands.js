@@ -44,16 +44,26 @@ class SimonCommands extends React.Component {
     }
   }
 
-  lightUp(e, color) {
+  lightUp = (e, color)  => {
+    e.target.style.backgroundColor = "white";
+    e.persist();
+    setTimeout(function(){
+      e.target.style.backgroundColor = color;
+    }, 150);
+
     let path = this.state.path;
-    if(path.length < 1) {
-      this.newRound(this.state.count, []);
-      return;
-    }
-    if (color !== path.pop()){
+
+    if (path.length < 1) return;
+    let what = path.shift();
+    if (color !== what){
       alert('wrong');
     }
     this.setState({path:path});
+    if(path.length < 1) {
+       this.newRound(this.state.count, []);
+       return;
+     }
+  //  this.setState({path:path});
     //e.target.style.backgroundColor = `light${color}`;
     //e.persist();
     //setTimeout(function(){
