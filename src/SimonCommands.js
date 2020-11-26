@@ -9,58 +9,75 @@ function Button (props){
 class SimonCommands extends React.Component {
 
   state = {
-    selected: "",
+    curIndex: 0,
     valid: true,
     green: "green",
     red: "red",
     yellow: "yellow",
     blue: "blue",
-    count: 3,
+    count: 0,
     path: [],
   }
   colors = ["green", "red", "yellow", "blue"];
   startGame() {
-    this.newRound(0, []);
+    this.setState({count: 0, path:["green","blue","red", "red"]}, () => {
+			this.newRound(0)
+		});
   }
-  newRound(i, path) {
+  newRound(i) {
+		let { path } = this.state;
     const index = Math.floor(Math.random() * this.colors.length);
     const tile = this.colors[index];
     path.push(tile);
-    this.setState({[tile]:"white"}, () => {
+    this.setState({curIndex: 0, path}, () => {
       let that = this;
-      setTimeout(function(){
-        that.setState({[tile]:tile}, () => {
-          if (i < that.state.count) {
-            setTimeout(function(){
-              that.newRound(i+1, path);
-            }, 250);
-          }
-        });
-      }, 250);
+			this.playPath(0, path);
+      //setTimeout(function(){
+       // that.setState({[tile]:tile}, () => {
+        //  if (i < that.state.count) {
+         //   setTimeout(function(){
+          //    that.newRound(i+1, path);
+           // }, 250);
+         // }
+     //   });
+     // }, 250);
     });
-    if (i >= this.state.count) {
+    if (i > this.state.count) {
       console.log(...path);
-      this.setState({path:path});
+      //this.setState({path:path});
     }
   }
-
+	playPath = (index, path) => {
+		let that = this;
+		const color = path[index];
+		that.setState({[color]:"white"}, () => {
+			setTimeout(function(){
+				that.setState({[color]:color}, () => {
+					if (index < path.length){
+						setTimeout(function() {
+							that.playPath(index+1, path);
+						}, 250);
+					}
+				});
+			}, 250);
+		});
+	}
   lightUp = (e, color)  => {
+		let { curIndex, path } = this.state;
     e.target.style.backgroundColor = "white";
     e.persist();
     setTimeout(function(){
       e.target.style.backgroundColor = color;
     }, 150);
 
-    let path = this.state.path;
-
     if (path.length < 1) return;
-    let what = path.shift();
+    let what = path[curIndex++];
     if (color !== what){
       alert('wrong');
     }
-    this.setState({path:path});
-    if(path.length < 1) {
-       this.newRound(this.state.count, []);
+    this.setState({path:path, count:this.state.count+1, curIndex:curIndex});
+    if(curIndex === path.length) {
+       this.newRound(this.state.count);
        return;
      }
   //  this.setState({path:path});
